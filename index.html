@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vonk de Robot — De Wachtwoordmissie</title>
+  <link rel="stylesheet" href="css/stijl.css?v=codewoord-20260709a">
+</head>
+<body>
+
+  <!-- ============================================================
+       VONK DE ROBOT — De Wachtwoordmissie
+       Een educatieve 2D-platformgame over veilige wachtwoorden.
+
+       EMBEDDEN OP JE WEBSITE:
+       Kopieer alleen het <div class="vg-container">-blok hieronder,
+       de <link> naar css/stijl.css en de <script>-tags onderaan.
+       Alle styling is beperkt tot ".vg-container", dus jouw
+       website-layout wordt niet beïnvloed.
+       ============================================================ -->
+
+  <div class="vg-container" id="vg-container">
+
+    <!-- Het speelveld (16:9) -->
+    <canvas id="vg-canvas" width="960" height="540"></canvas>
+
+    <!-- Knoppen tijdens het spelen (pauze / opnieuw / geluid) -->
+    <div class="vg-spelknoppen vg-verborgen" id="vg-spelknoppen">
+      <button id="vg-knop-pauze" title="Pauze (P)">&#10073;&#10073;</button>
+      <button id="vg-knop-herstart" title="Opnieuw (R)">&#8635;</button>
+      <button id="vg-knop-geluid" title="Geluid aan/uit">&#128266;</button>
+    </div>
+
+    <!-- ===== HOOFDMENU ===== -->
+    <div class="vg-overlay" id="vg-scherm-menu">
+      <div class="vg-paneel vg-paneel-menu">
+        <div class="vg-menu-decoraties" aria-hidden="true">
+          <canvas class="vg-menu-level-canvas" id="vg-menu-level-canvas" width="960" height="540"></canvas>
+        </div>
+
+        <div class="vg-menu-topbar">
+          <p class="vg-menu-saldo">
+            <span class="vg-menu-stat-icoon">&#128273;</span>
+            <b id="vg-menu-sleutels">0</b>
+          </p>
+          <div class="vg-menu-topbar-rechts">
+            <button class="vg-knop-geluid-menu vg-verborgen" id="vg-knop-leerkracht"
+                    title="Naar het leerkracht-dashboard">&#129489;&#8205;&#127979; Leerkracht</button>
+            <button class="vg-knop-geluid-menu vg-verborgen" id="vg-knop-klas">&#127979; Klas-login</button>
+            <button class="vg-knop-geluid-menu" id="vg-knop-geluid-menu">&#128266; Geluid: aan</button>
+          </div>
+        </div>
+
+        <div class="vg-menu-inhoud">
+          <h1 class="vg-titel">VONK<span>DE ROBOT</span></h1>
+          <p class="vg-ondertitel">De Wachtwoordmissie</p>
+
+          <!-- Grote knop centraal bovenaan -->
+          <button class="vg-knop vg-knop-groot" id="vg-knop-menu-uitleg-ww">
+            <span class="vg-menu-knop-icoon">&#128273;</span>
+            <span>Wat is een veilig wachtwoord?</span>
+            <span class="vg-menu-knop-pijl">&#10095;</span>
+          </button>
+
+          <!-- De menuknoppen daaronder -->
+          <div class="vg-menu-knoppen">
+            <button class="vg-knop vg-knop-menu vg-knop-spelen" id="vg-knop-menu-spelen">
+              <span class="vg-menu-knop-icoon">&#9654;</span>
+              <span>Spelen</span>
+              <span class="vg-menu-knop-pijl">&#10095;</span>
+            </button>
+            <button class="vg-knop vg-knop-menu vg-knop-licht" id="vg-knop-menu-speluitleg">
+              <span class="vg-menu-knop-icoon">&#10067;</span>
+              <span>Speluitleg</span>
+              <span class="vg-menu-knop-pijl">&#10095;</span>
+            </button>
+            <!-- Winkel en Codewoord naast elkaar (compacter) -->
+            <div class="vg-menu-rij">
+              <button class="vg-knop vg-knop-menu vg-knop-paars" id="vg-knop-menu-winkel">
+                <span class="vg-menu-knop-icoon">&#128722;</span>
+                <span>Winkel</span>
+                <span class="vg-menu-knop-pijl">&#10095;</span>
+              </button>
+              <button class="vg-knop vg-knop-menu vg-knop-goud" id="vg-knop-menu-codewoord">
+                <span class="vg-menu-knop-icoon">&#127873;</span>
+                <span>Codewoord</span>
+                <span class="vg-menu-knop-pijl">&#10095;</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== WERELDKIEZER ===== -->
+    <div class="vg-overlay vg-verborgen" id="vg-scherm-werelden">
+      <div class="vg-paneel vg-paneel-uitleg">
+        <h1 class="vg-titel vg-titel-klein">Kies een wereld</h1>
+        <p class="vg-levels-uitleg">Elke wereld leert je iets nieuws over
+          digitale veiligheid. Maak een wereld af om de volgende te openen!</p>
+
+        <!-- De wereldkaarten worden hier door game.js in gezet -->
+        <div class="vg-wereld-grid" id="vg-wereld-lijst"></div>
+
+        <button class="vg-knop" id="vg-knop-terug-werelden">&#8617; Terug naar menu</button>
+      </div>
+    </div>
+
+    <!-- ===== LEVELKIEZER (van de gekozen wereld) ===== -->
+    <div class="vg-overlay vg-verborgen" id="vg-scherm-levels">
+      <div class="vg-paneel vg-paneel-uitleg">
+        <h1 class="vg-titel vg-titel-klein" id="vg-levels-titel">Kies een level</h1>
+        <p class="vg-levels-uitleg" id="vg-levels-leerdoel"></p>
+        <p class="vg-levels-uitleg">Verdien sterren: &#9733; finish gehaald &nbsp;&middot;&nbsp;
+          &#9733;&#9733; helft van de vragen goed &nbsp;&middot;&nbsp;
+          &#9733;&#9733;&#9733; alles goed!</p>
+
+        <!-- De levelkaarten worden hier door game.js in gezet -->
+        <div id="vg-level-lijst"></div>
+
+        <button class="vg-knop" id="vg-knop-terug-levels">&#8617; Terug naar de werelden</button>
+      </div>
+    </div>
+
+    <!-- ===== UITLEGSCHERM: WAT IS EEN VEILIG WACHTWOORD? ===== -->
+    <div class="vg-overlay vg-verborgen" id="vg-scherm-uitleg-ww">
+      <div class="vg-paneel vg-paneel-uitleg">
+        <h1 class="vg-titel vg-titel-klein">Wat is een veilig wachtwoord?</h1>
+
+        <p>Een veilig wachtwoord is een wachtwoord dat moeilijk te raden is
+           voor anderen, maar dat jij zelf goed kunt onthouden.</p>
+
+        <p><b>Een wachtwoord is meestal sterker als:</b></p>
+        <ul>
+          <li>het lang genoeg is;</li>
+          <li>er hoofdletters &eacute;n kleine letters in zitten;</li>
+          <li>er cijfers in zitten;</li>
+          <li>er speciale tekens in zitten, zoals ! ? # of @;</li>
+          <li>het geen naam, geboortedatum of makkelijk woord is;</li>
+          <li>je het wachtwoord niet voor meerdere accounts gebruikt.</li>
+        </ul>
+
+        <div class="vg-uitleg-kolommen">
+          <div class="vg-uitleg-blok vg-blok-fout">
+            <p><b>Niet zo veilig:</b></p>
+            <ul>
+              <li>welkom123</li>
+              <li>qwerty</li>
+              <li>12345678</li>
+              <li>meesterDanny</li>
+              <li>voetbal2026</li>
+              <li>je eigen naam met je geboortejaar</li>
+            </ul>
+          </div>
+          <div class="vg-uitleg-blok vg-blok-goed">
+            <p><b>Veiliger:</b></p>
+            <ul>
+              <li>BlauweTijger!47</li>
+              <li>MijnFietsRijdt#82</li>
+              <li>RegenBoog?319</li>
+              <li>IkLees3Boeken!</li>
+              <li>SterkeZin#2026</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="vg-tip"><b>Tip:</b> een lange zin met cijfers en tekens is vaak
+           makkelijker te onthouden &eacute;n veiliger dan &eacute;&eacute;n kort woord.</p>
+
+        <p class="vg-waarschuwing"><b>Belangrijk:</b> gebruik nooit je echte
+           wachtwoord in deze game. De voorbeelden zijn nepwachtwoorden om mee
+           te oefenen.</p>
+
+        <button class="vg-knop" id="vg-knop-terug-uitleg-ww">&#8617; Terug naar menu</button>
+      </div>
+    </div>
+
+    <!-- ===== SPELUITLEGSCHERM ===== -->
+    <div class="vg-overlay vg-verborgen" id="vg-scherm-speluitleg">
+      <div class="vg-paneel vg-paneel-uitleg">
+        <h1 class="vg-titel vg-titel-klein">Speluitleg</h1>
+
+        <p>Tijdens het spelen kom je wachtwoordvragen tegen.</p>
+        <p>Je ziet steeds een voorbeeld van een wachtwoord. Jij kiest dan:</p>
+        <p class="vg-keuze-voorbeeld">
+          <span class="vg-label-veilig">Veilig</span> of
+          <span class="vg-label-nietveilig">Niet veilig</span>
+        </p>
+        <p>Elke wereld heeft een eigen leerdoel:</p>
+        <ul>
+          <li><b>Wereld 1 — Wachtwoordschool:</b> sterke en zwakke wachtwoorden herkennen</li>
+          <li><b>Wereld 2 — Wachtwoordwerkplaats:</b> zwakke wachtwoorden verbeteren,
+              m&eacute;t de <b>wachtwoord-bouwer</b> na elke finish</li>
+          <li><b>Wereld 3 — Geheimenkluis:</b> wachtwoorden en codes geheim
+              houden. Pas op voor de <b>zoeklichten</b>: sta je in het licht,
+              dan gaat het alarm af!</li>
+          <li><b>Wereld 4 — Phishingrivier:</b> nepberichten en verdachte
+              links herkennen. Spring van <b>vlot</b> naar vlot over het
+              water &mdash; en let op de <b>happers</b> die eruit springen
+              (je ziet eerst spetters)!</li>
+          <li><b>Wereld 5 — Accountstad:</b> je accounts extra beveiligen.
+              Glip door de <b>beveiligingslasers</b> wanneer ze uit zijn
+              (ze knipperen eerst rood als waarschuwing)!</li>
+          <li><b>Wereld 6 — Cyberkasteel:</b> de grote eindmissie! Alle
+              vragen &eacute;n alle gevaren uit de vorige werelden komen
+              hier samen. Word jij de echte cyberheld?</li>
+        </ul>
+
+        <p class="vg-tip"><b>Nieuw vanaf Wereld 2: de zap-blaster!</b><br>
+           Richt met je <b>muis</b> en <b>klik</b> om een zap-schot af te vuren.
+           Daarmee versla je vijanden op afstand — in de Werkplaats zijn dat
+           rollende <b>tandwielen</b> en <b>schroefdrones</b>. Stekelbollen
+           zijn gepantserd — die moet je nog steeds ontwijken!</p>
+
+        <p><b>Heb je het goed?</b><br>Dan verdien je sleutels &#128273;.</p>
+        <p><b>Heb je het fout?</b><br>Dan krijg je korte uitleg waarom.</p>
+        <p>Met je sleutels kun je in de winkel nieuwe skins kopen voor je speler.</p>
+
+        <div class="vg-uitleg-blok">
+          <p><b>Besturing:</b></p>
+          <ul>
+            <li>&larr; &rarr; of A / D — lopen</li>
+            <li>Spatie, &uarr; of W — springen</li>
+            <li>P — pauze &nbsp;&middot;&nbsp; R — level opnieuw</li>
+            <li>Spring b&oacute;venop een slijmpje om het te verslaan!</li>
+            <li>Pas op: <b>stekelbollen</b> kun je n&iacute;et verslaan — ontwijken dus!</li>
+            <li>Sommige platforms <b>bewegen</b> (lift mee!) of <b>storten in</b> — blijf niet staan!</li>
+          </ul>
+        </div>
+
+        <p class="vg-tip"><b>Doel:</b> probeer zoveel mogelijk goede antwoorden
+           te geven, verzamel sleutels en bereik de finish!
+           Let op: de finish werkt pas als je minstens <b>5 slotjes</b> hebt
+           geprobeerd — je ziet je voortgang bovenin het scherm.</p>
+
+        <button class="vg-knop" id="vg-knop-terug-speluitleg">&#8617; Terug naar menu</button>
+      </div>
+    </div>
+
+    <!-- ===== WINKELSCHERM ===== -->
+    <div class="vg-overlay vg-verborgen" id="vg-scherm-winkel">
+      <div class="vg-paneel vg-paneel-uitleg">
+        <h1 class="vg-titel vg-titel-klein">&#128722; Winkel</h1>
+        <p class="vg-winkel-saldo">Jouw sleutels:
+          &#128273; <b id="vg-winkel-sleutels">0</b>
+        </p>
+
+        <!-- De afdelingen (Robots/Lasers/Codewoord) worden hier
+             door winkel.js in gezet, netjes onder elkaar -->
+        <div id="vg-winkel-lijst"></div>
+
+        <button class="vg-knop" id="vg-knop-terug-winkel">&#8617; Terug naar menu</button>
+      </div>
+    </div>
+
+    <!-- ===== PAUZESCHERM ===== -->
+    <div class="vg-overlay vg-verborgen" id="vg-scherm-pauze">
+      <div class="vg-paneel">
+        <h1 class="vg-titel">Pauze</h1>
+        <p>Even uitrusten? Vonk wacht op je.</p>
+        <button class="vg-knop" id="vg-knop-hervat">&#9654; Verder spelen</button>
+        <button class="vg-knop vg-knop-licht" id="vg-knop-herstart-pauze">&#8635; Level opnieuw</button>
+        <button class="vg-knop vg-knop-paars" id="vg-knop-menu-pauze">&#8962; Naar menu</button>
+      </div>
+    </div>
+
+    <!-- ===== GAME-OVER-SCHERM ===== -->
+    <div class="vg-overlay vg-verborgen" id="vg-scherm-gameover">
+      <div class="vg-paneel">
+        <h1 class="vg-titel">Oei, batterij leeg!</h1>
+        <p>Vonk heeft al zijn energie verloren&hellip; maar opgeven doen we niet!</p>
+        <p class="vg-score-regel">Score: <span id="vg-score-gameover">0</span></p>
+        <p>Sleutels deze ronde: &#128273; <b id="vg-sleutel-gameover">0</b> —
+           haal de finish om ze te houden!</p>
+        <button class="vg-knop" id="vg-knop-opnieuw-gameover">&#8635; Probeer opnieuw</button>
+        <button class="vg-knop vg-knop-paars" id="vg-knop-menu-gameover">&#8962; Naar menu</button>
+      </div>
+    </div>
+
+    <!-- ===== WACHTWOORD-BOUWER (na de finish) ===== -->
+    <div class="vg-overlay vg-verborgen" id="vg-scherm-bouwer">
+      <div class="vg-paneel vg-paneel-vraag">
+        <p class="vg-vraag-label">&#127959;&#65039; Wachtwoord-bouwer</p>
+        <h2>Bouw als afsluiter een supersterk wachtwoord!</h2>
+        <p class="vg-bouwer-waarschuwing">Verzin iets nieuws —
+           gebruik <b>nooit</b> je echte wachtwoord!</p>
+
+        <!-- Invoerveld + live sterkte-meter -->
+        <input type="text" id="vg-bouwer-invoer" maxlength="30"
+               autocomplete="off" spellcheck="false"
+               placeholder="Typ hier je oefenwachtwoord&hellip;">
+
+        <div class="vg-bouwer-meter">
+          <div id="vg-bouwer-meter-vulling"></div>
+        </div>
+        <p id="vg-bouwer-label">Nog leeg&hellip;</p>
+
+        <!-- Checklist: wat maakt het sterk? -->
+        <ul class="vg-bouwer-checklist" id="vg-bouwer-checklist">
+          <li data-check="lang">minstens 10 tekens</li>
+          <li data-check="hoofdletter">een hoofdletter</li>
+          <li data-check="kleineletter">een kleine letter</li>
+          <li data-check="cijfer">een cijfer</li>
+          <li data-check="teken">een speciaal teken (! ? # @)</li>
+          <li data-check="nietMakkelijk">geen makkelijk woord</li>
+        </ul>
+
+        <p id="vg-bouwer-bonus" class="vg-munt-badge">Nog geen bonus</p>
+
+        <button class="vg-knop vg-knop-spelen" id="vg-knop-bouwer-klaar">&#10004; Klaar!</button>
+        <button class="vg-knop vg-knop-licht" id="vg-knop-bouwer-overslaan">Overslaan</button>
+      </div>
+    </div>
+
+    <!-- ===== LEVEL-VOLTOOID-SCHERM ===== -->
+    <div class="vg-overlay vg-verborgen" id="vg-scherm-klaar">
+      <div class="vg-paneel">
+        <h1 class="vg-titel">Level gehaald! &#127881;</h1>
+        <p class="vg-sterren" id="vg-sterren-klaar"></p>
+        <p class="vg-score-regel">Score: <span id="vg-score-klaar">0</span></p>
+        <p class="vg-score-regel">Sleutels verdiend:
+          &#128273; <span id="vg-sleutel-klaar">0</span></p>
+        <p>Totaal gespaard: &#128273; <b id="vg-totaal-klaar">0</b> —
+           ga naar de winkel voor nieuwe skins!</p>
+        <button class="vg-knop vg-knop-spelen" id="vg-knop-volgende-klaar">&#9654; Volgende level</button>
+        <button class="vg-knop" id="vg-knop-opnieuw-klaar">&#8635; Speel opnieuw</button>
+        <button class="vg-knop vg-knop-paars" id="vg-knop-menu-klaar">&#8962; Naar menu</button>
+      </div>
+    </div>
+
+    <!-- ===== CODEWOORD INWISSELEN (bijv. van een werkblad) ===== -->
+    <div class="vg-overlay vg-verborgen" id="vg-scherm-codewoord">
+      <div class="vg-paneel vg-paneel-uitleg">
+        <h1 class="vg-titel vg-titel-klein">&#127873; Codewoord</h1>
+        <p>Heb je op een werkblad een geheim codewoord ontdekt?<br>
+           Wissel het hier in voor extra sleutels &mdash; &eacute;&eacute;n woord
+           geeft zelfs iets h&eacute;&eacute;l bijzonders!</p>
+
+        <div class="vg-code-rij vg-code-rij-midden">
+          <input type="text" id="vg-codewoord-invoer" class="vg-code-invoer"
+                 maxlength="25" autocomplete="off" spellcheck="false"
+                 placeholder="Typ hier je codewoord&hellip;">
+          <button class="vg-knop vg-knop-spelen" id="vg-knop-codewoord-verzilver">Verzilveren</button>
+        </div>
+
+        <p id="vg-codewoord-melding" class="vg-code-melding"></p>
+
+        <p class="vg-winkel-saldo">Jouw sleutels:
+          &#128273; <b id="vg-codewoord-sleutels">0</b></p>
+
+        <button class="vg-knop" id="vg-knop-terug-codewoord">&#8617; Terug naar menu</button>
+      </div>
+    </div>
+
+    <!-- ===== KLAS-LOGIN (alleen zichtbaar als Supabase is ingesteld) ===== -->
+    <div class="vg-overlay vg-verborgen" id="vg-scherm-klaslogin">
+      <div class="vg-paneel vg-paneel-uitleg">
+        <h1 class="vg-titel vg-titel-klein">&#127979; Klas-login</h1>
+
+        <!-- Stap 1: klasnaam typen -->
+        <div id="vg-klas-stap1">
+          <p>Typ de naam van je klas (die krijg je van je leerkracht):</p>
+          <input type="text" id="vg-klas-invoer" maxlength="40"
+                 autocomplete="off" spellcheck="false"
+                 placeholder="Bijv. groep7-vonkschool">
+          <button class="vg-knop vg-knop-spelen" id="vg-knop-klas-zoek">&#128269; Zoek mijn klas</button>
+        </div>
+
+        <!-- Stap 2: op je eigen naam klikken -->
+        <div id="vg-klas-stap2" class="vg-verborgen">
+          <p id="vg-klas-naam-titel"></p>
+          <div class="vg-klas-namen" id="vg-klas-namen"></div>
+        </div>
+
+        <!-- Stap 3: wachtwoord typen -->
+        <div id="vg-klas-stap3" class="vg-verborgen">
+          <p id="vg-klas-welkom"></p>
+          <input type="password" id="vg-klas-wachtwoord" maxlength="40"
+                 autocomplete="off" placeholder="Jouw wachtwoord">
+          <button class="vg-knop vg-knop-spelen" id="vg-knop-klas-login">&#128275; Inloggen</button>
+          <button class="vg-knop vg-knop-licht" id="vg-knop-klas-anders">Ik ben iemand anders</button>
+        </div>
+
+        <!-- Al ingelogd -->
+        <div id="vg-klas-ingelogd" class="vg-verborgen">
+          <p id="vg-klas-ingelogd-tekst"></p>
+          <button class="vg-knop vg-knop-paars" id="vg-knop-klas-uitloggen">Uitloggen</button>
+        </div>
+
+        <p id="vg-klas-fout" class="vg-klas-fout vg-verborgen"></p>
+
+        <button class="vg-knop" id="vg-knop-terug-klaslogin">&#8617; Terug naar menu</button>
+      </div>
+    </div>
+
+    <!-- ===== VRAAGVENSTER (wachtwoordvragen, 3 vormen) ===== -->
+    <div class="vg-overlay vg-verborgen" id="vg-scherm-vraag">
+      <div class="vg-paneel vg-paneel-vraag">
+        <p class="vg-vraag-label">&#128274; Wachtwoordcheck</p>
+        <h2 id="vg-vraag-titel">Is dit wachtwoord veilig?</h2>
+
+        <!-- Het voorbeeldwachtwoord (verborgen bij "kies het sterkste") -->
+        <p class="vg-wachtwoord" id="vg-vraag-wachtwoord">voorbeeld123</p>
+
+        <!-- De keuzeknoppen worden hier door vraagmodule.js in gezet -->
+        <div class="vg-vraag-keuzes" id="vg-vraag-keuzes"></div>
+
+        <p id="vg-vraag-feedback" class="vg-verborgen"></p>
+        <p id="vg-vraag-uitleg" class="vg-verborgen"></p>
+        <p id="vg-vraag-sleutels" class="vg-munt-badge vg-verborgen"></p>
+        <button class="vg-knop vg-verborgen" id="vg-knop-vraag-verder">&#9654; Verder spelen</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== SCRIPTS (volgorde is belangrijk) ===== -->
+  <script src="js/config.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/wachtwoorden.js"></script>
+  <script src="js/veilig-online.js"></script>
+  <script src="js/geheimen.js"></script>
+  <script src="js/accounts.js"></script>
+  <script src="js/eindmissie.js"></script>
+  <script src="js/opslag.js?v=klas-20260708b"></script>
+  <script src="js/online.js?v=klas-20260708b"></script>
+  <script src="js/geluid.js"></script>
+  <script src="js/skins.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/levels-wereld2.js"></script>
+  <script src="js/levels-wereld3.js"></script>
+  <script src="js/levels-wereld4.js"></script>
+  <script src="js/levels-wereld5.js"></script>
+  <script src="js/levels-wereld6.js"></script>
+  <script src="js/werelden.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/botsing.js"></script>
+  <script src="js/camera.js"></script>
+  <script src="js/achtergrond.js"></script>
+  <script src="js/speler.js"></script>
+  <script src="js/vijanden.js"></script>
+  <script src="js/objecten.js"></script>
+  <script src="js/menu-karakters.js?v=menu-20260706c"></script>
+  <script src="js/vraagmodule.js"></script>
+  <script src="js/bouwer.js"></script>
+  <script src="js/winkel.js?v=codewoord-20260709a"></script>
+  <script src="js/schermen.js?v=codewoord-20260709a"></script>
+  <script src="js/game.js?v=codewoord-20260709a"></script>
+</body>
+</html>

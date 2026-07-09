@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vonk de Robot — Leerkracht-dashboard</title>
+  <link rel="stylesheet" href="css/leerkracht.css?v=proflook-20260709a">
+</head>
+<body>
+
+<!-- ============================================================
+     LEERKRACHT-DASHBOARD
+     Hier maak je klassen aan, voeg je leerlingen toe (met
+     automatisch gegenereerde oefenwachtwoorden), volg je de
+     voortgang per leerling en zet je werelden open of dicht.
+
+     Werkt pas als js/supabase-config.js is ingevuld en
+     supabase-schema.sql één keer is uitgevoerd in Supabase.
+     ============================================================ -->
+
+<header class="lk-kop">
+  <h1>&#129302; Vonk de Robot <span>Leerkracht-dashboard</span></h1>
+  <div class="lk-kop-rechts">
+    <a href="index.html" target="_blank" rel="noopener">&#127918; Naar de game</a>
+    <button id="lk-knop-uitloggen" class="lk-knop lk-knop-stil lk-verborgen">Uitloggen</button>
+  </div>
+</header>
+
+<main class="lk-inhoud">
+
+  <!-- ===== Supabase nog niet ingesteld ===== -->
+  <section id="lk-view-config" class="lk-paneel lk-verborgen">
+    <h2>&#9881;&#65039; Eerst even instellen</h2>
+    <p>Het dashboard kan nog geen verbinding maken met Supabase.</p>
+    <ol>
+      <li>Maak een gratis project op <b>supabase.com</b></li>
+      <li>Voer in de <b>SQL Editor</b> het bestand <code>supabase-schema.sql</code> uit (één keer)</li>
+      <li>Vul in <code>js/supabase-config.js</code> je <b>Project URL</b> en <b>anon public key</b> in
+          (te vinden onder Project Settings &rarr; API)</li>
+      <li>Ververs deze pagina</li>
+    </ol>
+  </section>
+
+  <!-- ===== Inloggen / account maken ===== -->
+  <section id="lk-view-auth" class="lk-paneel lk-paneel-smal lk-verborgen">
+    <h2 id="lk-auth-titel">Inloggen</h2>
+    <p class="lk-stil">Log in met je leerkracht-account. Nog geen account? Maak er hieronder één aan.</p>
+
+    <label for="lk-auth-email">E-mailadres</label>
+    <input type="email" id="lk-auth-email" autocomplete="username" placeholder="jij@school.nl">
+
+    <label for="lk-auth-wachtwoord">Wachtwoord</label>
+    <input type="password" id="lk-auth-wachtwoord" autocomplete="current-password" placeholder="Je wachtwoord">
+
+    <p id="lk-auth-fout" class="lk-fout lk-verborgen"></p>
+    <p id="lk-auth-info" class="lk-info lk-verborgen"></p>
+
+    <div class="lk-knoppenrij">
+      <button id="lk-knop-inloggen" class="lk-knop lk-knop-primair">Inloggen</button>
+      <button id="lk-knop-registreren" class="lk-knop">Account aanmaken</button>
+    </div>
+  </section>
+
+  <!-- ===== Klassenoverzicht ===== -->
+  <section id="lk-view-klassen" class="lk-verborgen">
+    <div class="lk-paneel">
+      <h2>&#127979; Mijn klassen</h2>
+      <div id="lk-klassen-lijst" class="lk-klassen-lijst"></div>
+
+      <h3>Nieuwe klas aanmaken</h3>
+      <p class="lk-stil">Kies een klasnaam die leerlingen makkelijk kunnen typen,
+        maar wel uniek is — bijvoorbeeld <b>groep7-vonkschool</b>.
+        Met deze naam loggen de leerlingen in.</p>
+      <div class="lk-knoppenrij">
+        <input type="text" id="lk-nieuwe-klas" maxlength="40" placeholder="bijv. groep7-vonkschool">
+        <button id="lk-knop-klas-maken" class="lk-knop lk-knop-primair">+ Klas aanmaken</button>
+      </div>
+      <p id="lk-klassen-fout" class="lk-fout lk-verborgen"></p>
+    </div>
+  </section>
+
+  <!-- ===== Klasdetail: leerlingen + voortgang + werelden ===== -->
+  <section id="lk-view-klas" class="lk-verborgen">
+
+    <div class="lk-paneel">
+      <div class="lk-klas-kop">
+        <button id="lk-knop-terug" class="lk-knop lk-knop-stil">&#8617; Alle klassen</button>
+        <h2 id="lk-klas-titel"></h2>
+        <div class="lk-klas-kop-rechts">
+          <button id="lk-knop-verversen" class="lk-knop">&#8635; Verversen</button>
+          <button id="lk-knop-printen" class="lk-knop">&#128424;&#65039; Inloggegevens printen</button>
+          <button id="lk-knop-klas-verwijderen" class="lk-knop lk-knop-gevaar">Klas verwijderen</button>
+        </div>
+      </div>
+      <p class="lk-stil">Leerlingen loggen in de game in via <b>Klas-login</b> met
+        klasnaam <b id="lk-klas-loginnaam"></b>, hun naam en hun wachtwoord.</p>
+    </div>
+
+    <div class="lk-paneel">
+      <h3>&#127758; Werelden open of dicht</h3>
+      <p class="lk-stil">Open werelden zijn direct speelbaar voor de hele klas —
+        ook voor leerlingen die de vorige wereld nog niet af hebben.</p>
+      <div id="lk-werelden" class="lk-werelden"></div>
+    </div>
+
+    <div class="lk-paneel">
+      <h3>&#129489;&#8205;&#127891; Leerlingen</h3>
+      <p class="lk-stil">Per wereldkolom zie je: <b>levels gehaald</b> &middot;
+        <b>% van de vragen goed beantwoord</b> (groen &ge; 80%, geel &ge; 55%,
+        rood daaronder). Daaronder: <span class="lk-code lk-code-ok">&#10003;</span> /
+        <span class="lk-code lk-code-nee">&#10007;</span> = codewoord van die
+        wereld (van het werkblad) wel of niet verzilverd.</p>
+      <div class="lk-tabel-wikkel">
+        <table class="lk-tabel" id="lk-leerlingen-tabel">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p id="lk-leerlingen-leeg" class="lk-stil lk-verborgen">
+        Nog geen leerlingen — voeg ze hieronder toe.</p>
+
+      <h3>Leerlingen toevoegen</h3>
+      <p class="lk-stil">Eén naam per regel (alleen voornamen is prima).
+        Iedere leerling krijgt automatisch een makkelijk oefenwachtwoord,
+        zoals <b>Vos-Raket-42</b>.</p>
+      <textarea id="lk-nieuwe-leerlingen" rows="4"
+                placeholder="Sanne&#10;Youssef&#10;Milan"></textarea>
+      <div class="lk-knoppenrij">
+        <button id="lk-knop-leerlingen-toevoegen" class="lk-knop lk-knop-primair">+ Toevoegen</button>
+      </div>
+      <p id="lk-klas-fout" class="lk-fout lk-verborgen"></p>
+    </div>
+  </section>
+
+</main>
+
+<!-- Printbare inlogkaartjes (alleen zichtbaar bij het printen) -->
+<div id="lk-print" class="lk-print"></div>
+
+<script src="js/supabase-config.js?v=klas-20260708b"></script>
+<script src="js/leerkracht.js?v=klas-20260708b"></script>
+</body>
+</html>
