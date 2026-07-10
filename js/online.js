@@ -172,10 +172,6 @@ const KlasLogin = {
       if (window.Geluid) Geluid.klik();
       this.open();
     });
-    document.getElementById("vg-knop-leerkracht").addEventListener("click", () => {
-      if (window.Geluid) Geluid.klik();
-      window.open("leerkracht.html", "_blank");
-    });
     document.getElementById("vg-knop-terug-klaslogin").addEventListener("click", () => {
       if (window.Geluid) Geluid.klik();
       window.vonkSpel.naarMenu();
@@ -298,15 +294,9 @@ const KlasLogin = {
     window.vonkSpel.naarMenu();
   },
 
-  /* De klas- en leerkracht-knoppen in het menu bijwerken */
+  /* De klas-login-knop in het menu bijwerken */
   vernieuwMenuKnop() {
     const knop = document.getElementById("vg-knop-klas");
-    const leerkrachtKnop = document.getElementById("vg-knop-leerkracht");
-
-    // De leerkracht-snelkoppeling verdwijnt zodra een leerling
-    // is ingelogd (en zonder Supabase is hij er ook niet).
-    leerkrachtKnop.classList.toggle("vg-verborgen",
-      !Online.actief() || !!Online.leerling);
 
     if (!Online.actief()) {
       knop.classList.add("vg-verborgen");   // geen Supabase → knop weg

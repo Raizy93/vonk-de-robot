@@ -170,6 +170,12 @@ class Spel {
     /* Geluid aan/uit (in spel én in het menu) */
     knop("vg-knop-geluid").addEventListener("click", () => this.toggleGeluid());
     knop("vg-knop-geluid-menu").addEventListener("click", () => this.toggleGeluid());
+
+    /* Volledig scherm (knop in het menu én tijdens het spelen) */
+    knop("vg-knop-fullscreen").addEventListener("click", () => { Geluid.klik(); this.toggleVolledigScherm(); });
+    knop("vg-knop-fullscreen-spel").addEventListener("click", () => { Geluid.klik(); this.toggleVolledigScherm(); });
+    document.addEventListener("fullscreenchange", () => this.werkFullscreenKnoppenBij());
+    document.addEventListener("webkitfullscreenchange", () => this.werkFullscreenKnoppenBij());
   }
 
   koppelToetsen() {
@@ -189,7 +195,32 @@ class Spel {
       if (toets === "enter") {
         if (this.status === "gameover" || this.status === "klaar") this.volledigOpnieuw();
       }
+      // F = volledig scherm (maar niet terwijl je in een invoerveld typt,
+      //     bijv. bij het codewoord, de klas-login of de bouwer)
+      const inVeld = ["input", "textarea"].includes((e.target.tagName || "").toLowerCase());
+      if (toets === "f" && !inVeld) this.toggleVolledigScherm();
     });
+  }
+
+  /* Volledig scherm aan/uit. We zetten de ROOT (<html>) op fullscreen
+     zodat de game op 16:9 blijft (zie stijl.css) i.p.v. uitgerekt.
+     Werkt ook binnen een iframe, mits die 'allow="fullscreen"' heeft. */
+  toggleVolledigScherm() {
+    const doc = document;
+    const el = document.documentElement;
+    if (doc.fullscreenElement || doc.webkitFullscreenElement) {
+      (doc.exitFullscreen || doc.webkitExitFullscreen).call(doc);
+    } else {
+      const aan = el.requestFullscreen || el.webkitRequestFullscreen;
+      if (aan) { try { aan.call(el); } catch (e) {} }
+    }
+  }
+
+  /* De labels van de fullscreen-knoppen bijwerken (aan/verlaten) */
+  werkFullscreenKnoppenBij() {
+    const aan = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    const menuKnop = document.getElementById("vg-knop-fullscreen");
+    if (menuKnop) menuKnop.innerHTML = aan ? "⛶ Verlaten" : "⛶ Volledig scherm";
   }
 
   /* ---------- Statuswissels ---------- */
