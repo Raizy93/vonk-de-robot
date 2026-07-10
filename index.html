@@ -4,7 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vonk de Robot — De Wachtwoordmissie</title>
-  <link rel="stylesheet" href="css/stijl.css?v=fullscreen-20260710b">
+  <style>
+    /* Alleen voor deze pagina (bijv. in een iframe): geen witruimte
+       rondom de game. Raakt "embedden via kopiëren" niet, want deze
+       <style> hoort bij index.html, niet bij de gedeelde stijl.css. */
+    html, body { margin: 0; padding: 0; background: #7ec8f5; }
+  </style>
+  <link rel="stylesheet" href="css/stijl.css?v=muziek-20260710d">
 </head>
 <body>
 
@@ -29,7 +35,8 @@
       <button id="vg-knop-pauze" title="Pauze (P)">&#10073;&#10073;</button>
       <button id="vg-knop-herstart" title="Opnieuw (R)">&#8635;</button>
       <button id="vg-knop-fullscreen-spel" title="Volledig scherm (F)">&#9974;</button>
-      <button id="vg-knop-geluid" title="Geluid aan/uit">&#128266;</button>
+      <button id="vg-knop-muziek" title="Muziek aan/uit">&#127925;</button>
+      <button id="vg-knop-geluid" title="Geluidseffecten aan/uit">&#128266;</button>
     </div>
 
     <!-- ===== HOOFDMENU ===== -->
@@ -40,15 +47,18 @@
         </div>
 
         <div class="vg-menu-topbar">
-          <p class="vg-menu-saldo">
-            <span class="vg-menu-stat-icoon">&#128273;</span>
-            <b id="vg-menu-sleutels">0</b>
-          </p>
-          <div class="vg-menu-topbar-rechts">
+          <div class="vg-menu-topbar-links">
+            <p class="vg-menu-saldo">
+              <span class="vg-menu-stat-icoon">&#128273;</span>
+              <b id="vg-menu-sleutels">0</b>
+            </p>
             <button class="vg-knop-geluid-menu vg-verborgen" id="vg-knop-klas">&#127979; Klas-login</button>
+          </div>
+          <div class="vg-menu-topbar-rechts">
             <button class="vg-knop-geluid-menu" id="vg-knop-fullscreen"
                     title="Volledig scherm (F)">&#9974; Volledig scherm</button>
-            <button class="vg-knop-geluid-menu" id="vg-knop-geluid-menu">&#128266; Geluid: aan</button>
+            <button class="vg-knop-geluid-menu" id="vg-knop-muziek-menu">&#127925; Muziek: aan</button>
+            <button class="vg-knop-geluid-menu" id="vg-knop-geluid-menu">&#128266; Effecten: aan</button>
           </div>
         </div>
 
@@ -90,6 +100,9 @@
             </div>
           </div>
         </div>
+
+        <!-- Subtiele tip: verdwijnt vanzelf zodra je in volledig scherm zit -->
+        <p class="vg-fs-hint">&#9974; Druk op <b>F</b> voor volledig scherm &mdash; de beste ervaring!</p>
       </div>
     </div>
 
@@ -423,9 +436,10 @@
   <script src="js/geheimen.js"></script>
   <script src="js/accounts.js"></script>
   <script src="js/eindmissie.js"></script>
-  <script src="js/opslag.js?v=klas-20260708b"></script>
+  <script src="js/opslag.js?v=muziek-20260710b"></script>
   <script src="js/online.js?v=fullscreen-20260710a"></script>
   <script src="js/geluid.js"></script>
+  <script src="js/muziek.js?v=muziek-20260710b"></script>
   <script src="js/skins.js"></script>
   <script src="js/levels.js"></script>
   <script src="js/levels-wereld2.js"></script>
@@ -446,6 +460,6 @@
   <script src="js/bouwer.js"></script>
   <script src="js/winkel.js?v=codewoord-20260709a"></script>
   <script src="js/schermen.js?v=codewoord-20260709a"></script>
-  <script src="js/game.js?v=fullscreen-20260710b"></script>
+  <script src="js/game.js?v=muziek-20260710b"></script>
 </body>
 </html>

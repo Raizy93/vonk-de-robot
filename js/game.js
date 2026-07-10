@@ -38,6 +38,7 @@ class Spel {
     this.vraagModule = new VraagModule(() => this.hervatNaVraag());
     this.winkel = new Winkel(() => this.bijWinkelWijziging());
     Codewoord.init(this);   // het codewoord-scherm (eigen menuknop)
+    Muziek.init();          // achtergrondmuziek (start bij eerste klik/toets)
     this.bouwer = new WachtwoordBouwer((bonus) => this.bouwerKlaar(bonus));
 
     this.status = "menu";
@@ -54,6 +55,7 @@ class Spel {
     this.koppelKnoppen();
     this.koppelToetsen();
     this.werkGeluidKnoppenBij();
+    this.werkMuziekKnoppenBij();
 
     this.laadLevel(0, 0);
     this.naarMenu();
@@ -167,9 +169,13 @@ class Spel {
     knop("vg-knop-pauze").addEventListener("click", () => this.pauzeer());
     knop("vg-knop-herstart").addEventListener("click", () => this.volledigOpnieuw());
 
-    /* Geluid aan/uit (in spel én in het menu) */
+    /* Effecten (SFX) aan/uit — in spel én in het menu */
     knop("vg-knop-geluid").addEventListener("click", () => this.toggleGeluid());
     knop("vg-knop-geluid-menu").addEventListener("click", () => this.toggleGeluid());
+
+    /* Muziek aan/uit — in spel én in het menu */
+    knop("vg-knop-muziek").addEventListener("click", () => this.toggleMuziek());
+    knop("vg-knop-muziek-menu").addEventListener("click", () => this.toggleMuziek());
 
     /* Volledig scherm (knop in het menu én tijdens het spelen) */
     knop("vg-knop-fullscreen").addEventListener("click", () => { Geluid.klik(); this.toggleVolledigScherm(); });
@@ -407,18 +413,35 @@ class Spel {
     this.speler.skinId = Opslag.skin;
   }
 
-  /* Geluid aan/uit en de knoplabels bijwerken */
+  /* Geluidseffecten (SFX) aan/uit */
   toggleGeluid() {
     Opslag.zetGeluid(!Opslag.geluidAan);
     this.werkGeluidKnoppenBij();
     Geluid.klik();   // bevestigingsklikje (alleen hoorbaar als het nu aan is)
   }
 
+  /* Achtergrondmuziek aan/uit (los van de effecten) */
+  toggleMuziek() {
+    Opslag.zetMuziek(!Opslag.muziekAan);
+    this.werkMuziekKnoppenBij();
+    Muziek.werkBij();
+    Geluid.klik();
+  }
+
   werkGeluidKnoppenBij() {
-    const icoon = Opslag.geluidAan ? "\u{1F50A}" : "\u{1F507}";
+    const aan = Opslag.geluidAan;
+    const icoon = aan ? "\u{1F50A}" : "\u{1F507}";
     document.getElementById("vg-knop-geluid").textContent = icoon;
     document.getElementById("vg-knop-geluid-menu").textContent =
-      `${icoon} Geluid: ${Opslag.geluidAan ? "aan" : "uit"}`;
+      `${icoon} Effecten: ${aan ? "aan" : "uit"}`;
+  }
+
+  werkMuziekKnoppenBij() {
+    const aan = Opslag.muziekAan;
+    const knopSpel = document.getElementById("vg-knop-muziek");
+    knopSpel.classList.toggle("vg-uit", !aan);   // gedimd = uit
+    document.getElementById("vg-knop-muziek-menu").textContent =
+      `\u{1F3B5} Muziek: ${aan ? "aan" : "uit"}`;
   }
 
   pauzeer()        { this.status = "pauze";  this.schermen.toon("pauze"); }
