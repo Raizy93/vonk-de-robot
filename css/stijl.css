@@ -9,7 +9,7 @@
 .vg-container {
   position: relative;
   width: 100%;
-  max-width: 1280px;
+  max-width: none;
   aspect-ratio: 16 / 9;
   margin: 0 auto;
   overflow: hidden;
