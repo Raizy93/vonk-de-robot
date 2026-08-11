@@ -208,6 +208,31 @@ const Dashboard = {
     k("lk-knop-printen",   () => this.printInloggegevens());
     k("lk-knop-klas-verwijderen",       () => this.verwijderKlas());
     k("lk-knop-leerlingen-toevoegen",   () => this.voegLeerlingenToe());
+
+    /* Volledig scherm: knop + F-toets (niet terwijl je in een veld typt) */
+    k("lk-knop-fullscreen", () => this.toggleFullscreen());
+    document.addEventListener("keydown", (e) => {
+      const inVeld = ["input", "textarea"].includes((e.target.tagName || "").toLowerCase());
+      if (e.key.toLowerCase() === "f" && !inVeld) this.toggleFullscreen();
+    });
+    document.addEventListener("fullscreenchange", () => this.werkFullscreenKnopBij());
+  },
+
+  /* Volledig scherm aan/uit (de hele dashboardpagina).
+     Werkt ook in een iframe met 'allow="fullscreen"'. */
+  toggleFullscreen() {
+    const el = document.documentElement;
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else if (el.requestFullscreen) {
+      el.requestFullscreen().catch(() => {});
+    }
+  },
+
+  werkFullscreenKnopBij() {
+    const knop = document.getElementById("lk-knop-fullscreen");
+    if (knop) knop.innerHTML = document.fullscreenElement
+      ? "⛶ Verlaten" : "⛶ Volledig scherm";
   },
 
   /* --- Inloggen / registreren --- */
