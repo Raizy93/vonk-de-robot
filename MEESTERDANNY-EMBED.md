@@ -74,3 +74,10 @@ https://www.meesterdanny.com/leerkracht/digitale-geletterdheid/vonk-de-robot-lee
 
 Daarna gebruik je in het leerkracht-dashboard de link **Wachtwoord vergeten?**.
 De herstelmail gaat dan naar de MeesterDanny-pagina, niet naar GitHub.
+
+De knoppen **Terug naar dashboard**, **Annuleren** en **Naar leerkracht-dashboard**
+op de resetpagina openen bewust de bovenste browserpagina (`target="_top"`) naar:
+
+```txt
+https://www.meesterdanny.com/leerkracht/digitale-geletterdheid/vonk-de-robot-leerkrachtdashboard
+```

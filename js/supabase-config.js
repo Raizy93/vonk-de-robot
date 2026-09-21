@@ -21,5 +21,8 @@ const SUPABASE_CONFIG = {
 
   // Publieke pagina op meesterdanny.com waar de herstelmail naartoe wijst.
   // Die pagina embedt reset-wachtwoord.html en geeft de Supabase-token door.
-  passwordResetUrl: "https://www.meesterdanny.com/leerkracht/digitale-geletterdheid/vonk-de-robot-wachtwoord-herstellen"
+  passwordResetUrl: "https://www.meesterdanny.com/leerkracht/digitale-geletterdheid/vonk-de-robot-wachtwoord-herstellen",
+
+  // Publieke pagina op meesterdanny.com waar het leerkracht-dashboard staat.
+  dashboardUrl: "https://www.meesterdanny.com/leerkracht/digitale-geletterdheid/vonk-de-robot-leerkrachtdashboard"
 };

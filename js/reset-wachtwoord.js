@@ -12,6 +12,7 @@ const ResetWachtwoord = {
 
   start() {
     this.token = this.haalTokenUitUrl();
+    this.zetDashboardLinks();
     this.bind();
 
     if (!this.ingesteld()) {
@@ -33,6 +34,19 @@ const ResetWachtwoord = {
            !!SUPABASE_CONFIG.url &&
            !!SUPABASE_CONFIG.anonKey &&
            SUPABASE_CONFIG.url.indexOf("JOUW-") === -1;
+  },
+
+  dashboardUrl() {
+    return (typeof SUPABASE_CONFIG !== "undefined" && SUPABASE_CONFIG.dashboardUrl)
+      ? SUPABASE_CONFIG.dashboardUrl
+      : "leerkracht.html";
+  },
+
+  zetDashboardLinks() {
+    for (const link of document.querySelectorAll("[data-dashboard-link]")) {
+      link.href = this.dashboardUrl();
+      link.target = "_top";
+    }
   },
 
   bind() {
@@ -112,11 +126,21 @@ const ResetWachtwoord = {
 
       this.toonInfo("Gelukt! Je wachtwoord is aangepast. Je wordt zo teruggestuurd naar het dashboard.");
       window.history.replaceState(null, "", window.location.pathname);
-      setTimeout(() => { window.location.href = "leerkracht.html"; }, 1800);
+      setTimeout(() => { this.gaNaarDashboard(); }, 1800);
     } catch (fout) {
       this.toonFout(`Opslaan lukte niet: ${fout.message || fout}. Vraag eventueel een nieuwe herstelmail aan.`);
       knop.disabled = false;
       knop.textContent = "Wachtwoord opslaan";
+    }
+  }
+,
+
+  gaNaarDashboard() {
+    const url = this.dashboardUrl();
+    try {
+      window.top.location.href = url;
+    } catch (e) {
+      window.location.href = url;
     }
   }
 };
