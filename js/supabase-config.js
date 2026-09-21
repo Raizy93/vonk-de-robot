@@ -17,5 +17,9 @@
 
 const SUPABASE_CONFIG = {
   url:     "https://bzhwhthkygrauttkqjiv.supabase.co",
-  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6aHdodGhreWdyYXV0dGtxaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1MjkxMDEsImV4cCI6MjA5OTEwNTEwMX0.9abSTTILUL6Iu6Zxzg9DpYTxFlgIItwHHpRBn8sUX1w"
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6aHdodGhreWdyYXV0dGtxaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1MjkxMDEsImV4cCI6MjA5OTEwNTEwMX0.9abSTTILUL6Iu6Zxzg9DpYTxFlgIItwHHpRBn8sUX1w",
+
+  // Publieke pagina op meesterdanny.com waar de herstelmail naartoe wijst.
+  // Die pagina embedt reset-wachtwoord.html en geeft de Supabase-token door.
+  passwordResetUrl: "https://www.meesterdanny.com/leerkracht/digitale-geletterdheid/vonk-de-robot-wachtwoord-herstellen"
 };

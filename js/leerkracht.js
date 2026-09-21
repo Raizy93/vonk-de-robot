@@ -105,7 +105,7 @@ const DB = {
 
   async stuurHerstelmail(email) {
     const basis = window.location.href.replace(/[^/]*$/, "");
-    const redirect = `${basis}reset-wachtwoord.html`;
+    const redirect = SUPABASE_CONFIG.passwordResetUrl || `${basis}reset-wachtwoord.html`;
     const antwoord = await fetch(`${SUPABASE_CONFIG.url}/auth/v1/recover?redirect_to=${encodeURIComponent(redirect)}`, {
       method: "POST",
       headers: {
