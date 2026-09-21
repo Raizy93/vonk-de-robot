@@ -9,7 +9,8 @@
 .vg-container {
   position: relative;
   width: 100%;
-  max-width: 1280px;
+  /* Iframe-vulling: was 1280px. Zet terug op 1280px om dit terug te draaien. */
+  max-width: none;
   aspect-ratio: 16 / 9;
   margin: 0 auto;
   overflow: hidden;
@@ -25,6 +26,31 @@
   display: block;
   width: 100%;
   height: 100%;
+}
+
+/* Volledig scherm: we zetten de ROOT (<html>) op fullscreen. Die
+   ontkomt aan de browserregel die het fullscreen-element altijd naar
+   100% uitrekt, zodat we de game op 16:9 kunnen houden — zwarte
+   balken eromheen in plaats van vervorming. */
+html:fullscreen,
+html:-webkit-full-screen { background: #000; }
+
+html:fullscreen body,
+html:-webkit-full-screen body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html:fullscreen .vg-container,
+html:-webkit-full-screen .vg-container {
+  /* Grootste 16:9-rechthoek die binnen het scherm past */
+  width: min(100vw, 177.78vh);
+  height: min(100vh, 56.25vw);
+  max-width: none;
+  border-radius: 0;
 }
 
 /* ----- Hulpklasse: verbergen ----- */
@@ -308,16 +334,40 @@
   pointer-events: auto;
 }
 
-/* Rechterkant van de topbar: klas-login + geluid naast elkaar */
+/* Linker- en rechterkant van de topbar (sleutels + leerlingnaam links,
+   volledig scherm / muziek / effecten rechts) */
+.vg-container .vg-menu-topbar-links,
 .vg-container .vg-menu-topbar-rechts {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
+/* Subtiele tip onderin het hoofdmenu: druk op F voor volledig scherm.
+   Verdwijnt vanzelf zodra je al in volledig scherm zit. */
+.vg-container .vg-fs-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 1%;
+  transform: translateX(-50%);
+  z-index: 2;
+  margin: 0;
+  padding: 3px 16px;
+  font-size: clamp(0.58rem, 1.3vw, 0.8rem);
+  font-weight: bold;
+  color: #fff;
+  background: rgba(20, 44, 96, 0.42);
+  border-radius: 999px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.vg-container .vg-fs-hint b { color: #ffd75e; }
+
+html:fullscreen .vg-fs-hint { display: none; }
+
 .vg-container .vg-menu-inhoud {
   left: 50%;
-  top: 5%;
+  top: 4%;
   width: min(46%, 590px);
   transform: translateX(-50%);
   text-align: center;
@@ -354,7 +404,7 @@
 
 .vg-container .vg-paneel-menu .vg-ondertitel {
   display: inline-block;
-  margin: 8px 0 12px 0;
+  margin: 6px 0 8px 0;
   padding: 6px 26px 8px 26px;
   color: #fff;
   background: linear-gradient(180deg, #32599c, #244684);
@@ -375,7 +425,7 @@
   gap: 12px;
   width: 100%;
   margin: 0;
-  padding: 8px 14px;
+  padding: 7px 14px;
   font-size: clamp(0.88rem, 2vw, 1.14rem);
   text-transform: none;
   letter-spacing: 0.4px;
@@ -387,13 +437,13 @@
   transition: transform 0.08s, box-shadow 0.08s, border-color 0.08s;
 }
 
-.vg-container .vg-knop-groot { margin-bottom: 8px; }
+.vg-container .vg-knop-groot { margin-bottom: 5px; }
 
 /* De rij menuknoppen onder de grote knop */
 .vg-container .vg-menu-knoppen {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
 }
 
 /* Twee knoppen naast elkaar (Winkel + Codewoord) */
@@ -775,6 +825,9 @@
   border-color: rgba(43, 58, 143, 0.55);
   transform: translateY(-2px);
 }
+
+/* Een uitgeschakelde knop (bijv. muziek uit) in de spelbalk: gedimd */
+.vg-container .vg-spelknoppen button.vg-uit { opacity: 0.4; }
 
 /* ----- Levelkiezer ----- */
 .vg-container .vg-levels-uitleg {

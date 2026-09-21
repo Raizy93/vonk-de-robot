@@ -199,10 +199,64 @@ textarea { resize: vertical; }
 .lk-knop-stil:active { transform: none; }
 .lk-kop .lk-knop-stil { color: #fff; text-shadow: 1px 1px 0 rgba(43, 58, 143, 0.6); }
 
+.lk-linkknop {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 0;
+  color: #2b3a8f;
+  font: inherit;
+  font-weight: bold;
+  background: transparent;
+  border: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.lk-linkknop:hover { color: #17a2b8; }
+
 .lk-knop-mini {
   padding: 4px 10px;
   font-size: 0.8rem;
   border-radius: 9px;
+}
+
+.lk-reset-kaart {
+  position: relative;
+  overflow: hidden;
+}
+
+.lk-reset-kaart::after {
+  content: "";
+  position: absolute;
+  right: -48px;
+  bottom: -62px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 42% 38%, #fff7a8 0 36%, transparent 37%),
+    radial-gradient(circle, rgba(255, 211, 67, 0.28) 0 58%, transparent 59%);
+  pointer-events: none;
+}
+
+.lk-reset-icoon {
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+  font-size: 2rem;
+  background: #fff2bd;
+  border: 3px solid #f5bd30;
+  border-radius: 18px;
+  box-shadow: 0 4px 10px rgba(18, 41, 95, 0.16);
+}
+
+.lk-knop[disabled],
+.lk-knop:disabled {
+  opacity: 0.7;
+  cursor: wait;
+  transform: none;
 }
 
 /* ---------- Meldingen ---------- */

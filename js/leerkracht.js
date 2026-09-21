@@ -103,6 +103,24 @@ const DB = {
     return false;
   },
 
+  async stuurHerstelmail(email) {
+    const basis = window.location.href.replace(/[^/]*$/, "");
+    const redirect = `${basis}reset-wachtwoord.html`;
+    const antwoord = await fetch(`${SUPABASE_CONFIG.url}/auth/v1/recover?redirect_to=${encodeURIComponent(redirect)}`, {
+      method: "POST",
+      headers: {
+        "apikey": SUPABASE_CONFIG.anonKey,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email })
+    });
+    const data = await antwoord.json().catch(() => ({}));
+    if (!antwoord.ok) {
+      throw new Error(data.msg || data.error_description || data.message ||
+                      `Fout (${antwoord.status})`);
+    }
+  },
+
   /* Zorg dat het token geldig is (zo nodig verversen) */
   async zorgVoorSessie() {
     if (!this.sessie) return false;
@@ -191,6 +209,7 @@ const Dashboard = {
 
     k("lk-knop-inloggen",    () => this.authActie(false));
     k("lk-knop-registreren", () => this.authActie(true));
+    k("lk-knop-wachtwoord-vergeten", () => this.wachtwoordVergeten());
     document.getElementById("lk-auth-wachtwoord").addEventListener("keydown",
       (e) => { if (e.key === "Enter") this.authActie(false); });
 
@@ -208,6 +227,31 @@ const Dashboard = {
     k("lk-knop-printen",   () => this.printInloggegevens());
     k("lk-knop-klas-verwijderen",       () => this.verwijderKlas());
     k("lk-knop-leerlingen-toevoegen",   () => this.voegLeerlingenToe());
+
+    /* Volledig scherm: knop + F-toets (niet terwijl je in een veld typt) */
+    k("lk-knop-fullscreen", () => this.toggleFullscreen());
+    document.addEventListener("keydown", (e) => {
+      const inVeld = ["input", "textarea"].includes((e.target.tagName || "").toLowerCase());
+      if (e.key.toLowerCase() === "f" && !inVeld) this.toggleFullscreen();
+    });
+    document.addEventListener("fullscreenchange", () => this.werkFullscreenKnopBij());
+  },
+
+  /* Volledig scherm aan/uit (de hele dashboardpagina).
+     Werkt ook in een iframe met 'allow="fullscreen"'. */
+  toggleFullscreen() {
+    const el = document.documentElement;
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else if (el.requestFullscreen) {
+      el.requestFullscreen().catch(() => {});
+    }
+  },
+
+  werkFullscreenKnopBij() {
+    const knop = document.getElementById("lk-knop-fullscreen");
+    if (knop) knop.innerHTML = document.fullscreenElement
+      ? "⛶ Verlaten" : "⛶ Volledig scherm";
   },
 
   /* --- Inloggen / registreren --- */
@@ -248,6 +292,25 @@ const Dashboard = {
           : tekst.indexOf("already registered") >= 0
             ? "Er bestaat al een account met dit e-mailadres. Log in."
             : `Dat lukte niet: ${tekst}`);
+    }
+  },
+
+  async wachtwoordVergeten() {
+    const email = document.getElementById("lk-auth-email").value.trim();
+    this.zetMelding("lk-auth-fout", "");
+    this.zetMelding("lk-auth-info", "");
+
+    if (!email) {
+      this.zetMelding("lk-auth-fout", "Vul eerst je e-mailadres in en klik daarna op wachtwoord vergeten.");
+      return;
+    }
+
+    try {
+      await DB.stuurHerstelmail(email);
+      this.zetMelding("lk-auth-info",
+        "Als dit e-mailadres bestaat, is er een herstelmail verstuurd. Check ook je spammap.");
+    } catch (fout) {
+      this.zetMelding("lk-auth-fout", `Herstelmail versturen lukte niet: ${fout.message}`);
     }
   },
 

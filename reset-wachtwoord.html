@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vonk de Robot — Wachtwoord herstellen</title>
+  <link rel="stylesheet" href="css/leerkracht.css?v=reset-20260921a">
+</head>
+<body>
+
+<header class="lk-kop">
+  <h1>&#129302; Vonk de Robot <span>Wachtwoord herstellen</span></h1>
+  <div class="lk-kop-rechts">
+    <a href="leerkracht.html">&#8592; Terug naar dashboard</a>
+  </div>
+</header>
+
+<main class="lk-inhoud">
+  <section class="lk-paneel lk-paneel-smal lk-reset-kaart">
+    <div class="lk-reset-icoon" aria-hidden="true">&#128273;</div>
+    <h2>Nieuw leerkracht-wachtwoord</h2>
+    <p class="lk-stil">
+      Kies hieronder een nieuw wachtwoord. Gebruik minstens 8 tekens.
+      Daarna kun je weer inloggen op het leerkracht-dashboard.
+    </p>
+
+    <div id="rw-formulier">
+      <label for="rw-wachtwoord">Nieuw wachtwoord</label>
+      <input type="password" id="rw-wachtwoord" autocomplete="new-password"
+             placeholder="Nieuw wachtwoord">
+
+      <label for="rw-wachtwoord-herhaal">Herhaal nieuw wachtwoord</label>
+      <input type="password" id="rw-wachtwoord-herhaal" autocomplete="new-password"
+             placeholder="Nog een keer">
+
+      <p id="rw-fout" class="lk-fout lk-verborgen"></p>
+      <p id="rw-info" class="lk-info lk-verborgen"></p>
+
+      <div class="lk-knoppenrij">
+        <button id="rw-knop-opslaan" class="lk-knop lk-knop-primair">
+          Wachtwoord opslaan
+        </button>
+        <a class="lk-knop" href="leerkracht.html">Annuleren</a>
+      </div>
+    </div>
+
+    <div id="rw-geen-token" class="lk-verborgen">
+      <p class="lk-fout">
+        Deze pagina is geopend zonder geldige herstelcode.
+      </p>
+      <p class="lk-stil">
+        Vraag opnieuw een herstelmail aan via het leerkracht-dashboard of via Supabase.
+      </p>
+      <a class="lk-knop lk-knop-primair" href="leerkracht.html">
+        Naar leerkracht-dashboard
+      </a>
+    </div>
+  </section>
+</main>
+
+<script src="js/supabase-config.js?v=klas-20260708b"></script>
+<script src="js/reset-wachtwoord.js?v=reset-20260921a"></script>
+</body>
+</html>
