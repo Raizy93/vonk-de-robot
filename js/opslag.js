@@ -23,8 +23,7 @@ const Opslag = {
                          // (de leerkracht ziet hiervan het percentage)
   laatsteLevel: null,    // laatst gestarte level, bijv. "5-1" (wereld-level);
                          // de leerkracht ziet dit als "W6 L2"
-  geluidAan: true,   // geluidseffecten (SFX)
-  muziekAan: true,   // achtergrondmuziek (apart te regelen)
+  geluidAan: true,
 
   BASIS_SLEUTEL: "vonk-wachtwoordgame",
   SLEUTEL: "vonk-wachtwoordgame",   // naam in localStorage (wisselt bij klas-login)
@@ -55,7 +54,6 @@ const Opslag = {
       }
 
       this.geluidAan = data.geluidAan !== false;   // standaard aan
-      this.muziekAan = data.muziekAan !== false;   // standaard aan
 
       // Veiligheid: geselecteerde skin moet ook echt gekocht zijn
       if (!this.gekochteSkins.includes(this.skin)) this.skin = "standaard";
@@ -90,8 +88,7 @@ const Opslag = {
       sterrenPerLevel: this.sterrenPerLevel,
       vragenStats: this.vragenStats,
       laatsteLevel: this.laatsteLevel,
-      geluidAan: this.geluidAan,
-      muziekAan: this.muziekAan
+      geluidAan: this.geluidAan
     };
   },
 
@@ -236,15 +233,9 @@ const Opslag = {
     return this.sterrenPerLevel[sleutel] || 0;
   },
 
-  /* --- Geluidseffecten (SFX) aan/uit --- */
+  /* --- Geluid aan/uit --- */
   zetGeluid(aan) {
     this.geluidAan = aan;
-    this.bewaar();
-  },
-
-  /* --- Achtergrondmuziek aan/uit --- */
-  zetMuziek(aan) {
-    this.muziekAan = aan;
     this.bewaar();
   }
 };
